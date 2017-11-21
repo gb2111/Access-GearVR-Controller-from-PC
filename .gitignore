@@ -1,0 +1,7 @@
+
+src/.vs/GearVR/v14/*
+src/Debug/*
+src/Driver4VR.VC.db
+src/GearVR/GearVr.csproj.user
+src/GearVR/obj/*
+src/GearVRLib/obj/*
