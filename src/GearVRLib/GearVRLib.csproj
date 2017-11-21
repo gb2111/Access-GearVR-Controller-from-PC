@@ -135,8 +135,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(SolutionDir)..\thirdparty\OpenVR\ovr106\openvr_api_32.dll" T:\Driver4VR\Build\$(ConfigurationName)\ /Y
-xcopy "$(SolutionDir)..\thirdparty\FreePIEx\freepie_io.dll" T:\Driver4VR\Build\$(ConfigurationName)\ /Y</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
