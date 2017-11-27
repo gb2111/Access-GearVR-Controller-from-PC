@@ -23,7 +23,7 @@ namespace Driver4VR.GearVR
 		private byte[] eventData = new byte[0];
 		private int[] eventAnalysis = new int[60 * 8];
 		private int[] eventBits = new int[60 * 8];
-		int eventAnalysisThr = 40;
+		int eventAnalysisThr = 80;
 
 
 		bool homeButton = false;
@@ -260,29 +260,22 @@ namespace Driver4VR.GearVR
 			val1 = val2 = val3 = 0;
 
 			int bit = 0;
-			val1 += (eventData[48] & (1 << 7)) != 0 ? (1 << 0) : 0;
-			val1 += (eventData[49] & (1 << 0)) != 0 ? (1 << 1) : 0;
-			val1 += (eventData[49] & (1 << 1)) != 0 ? (1 << 2) : 0;
-			val1 += (eventData[49] & (1 << 3)) != 0 ? (1 << bit++) : 0;
-			val1 += (eventData[49] & (1 << 3)) != 0 ? (1 << bit++) : 0;
+			val1 += (eventData[49] & (1 << 0)) != 0 ? (1 << bit) : 0; bit++;
+			val1 += (eventData[49] & (1 << 1)) != 0 ? (1 << bit) : 0; bit++;
+			val1 += (eventData[49] & (1 << 2)) != 0 ? (1 << bit) : 0; bit++;
+			val1 += (eventData[49] & (1 << 3)) != 0 ? (1 << bit) : 0; bit++;
 
 			bit = 0;
-			val2 += (eventData[51] & (1 << 0)) != 0 ? (1 << 0) : 0;
-			val2 += (eventData[51] & (1 << 1)) != 0 ? (1 << 1) : 0;
-			val2 += (eventData[51] & (1 << 2)) != 0 ? (1 << 2) : 0;
-			val2 += (eventData[51] & (1 << 3)) != 0 ? (1 << 3) : 0;
-			val2 += (eventData[51] & (1 << 4)) != 0 ? (1 << bit++) : 0;
+			val2 += (eventData[51] & (1 << 1)) != 0 ? (1 << bit) : 0; bit++;
+			val2 += (eventData[51] & (1 << 2)) != 0 ? (1 << bit) : 0; bit++;
+			val2 += (eventData[51] & (1 << 3)) != 0 ? (1 << bit) : 0; bit++;
+			val2 += (eventData[51] & (1 << 4)) != 0 ? (1 << bit) : 0; bit++;
 
 			bit = 0;
-			//val3 += (eventData[52] & (1 << 5)) != 0 ? (1 << 0) : 0;
-			//val3 += (eventData[52] & (1 << 6)) != 0 ? (1 << 1) : 0;
-			//val3 += (eventData[52] & (1 << 7)) != 0 ? (1 << 2) : 0;
-			//val3 += (eventData[53] & (1 << 0)) != 0 ? (1 << 3) : 0;
-			val3 += (eventData[52] & (1 << 6)) != 0 ? (1 << bit++) : 0;
-			val3 += (eventData[52] & (1 << 7)) != 0 ? (1 << bit++) : 0;
-			val3 += (eventData[53] & (1 << 0)) != 0 ? (1 << bit++) : 0;
-			val3 += (eventData[53] & (1 << 1)) != 0 ? (1 << bit++) : 0;
-			val3 += (eventData[53] & (1 << 2)) != 0 ? (1 << bit++) : 0;
+			val3 += (eventData[52] & (1 << 7)) != 0 ? (1 << bit) : 0; bit++;
+			val3 += (eventData[53] & (1 << 0)) != 0 ? (1 << bit) : 0; bit++;
+			val3 += (eventData[53] & (1 << 1)) != 0 ? (1 << bit) : 0; bit++;
+			val3 += (eventData[53] & (1 << 2)) != 0 ? (1 << bit) : 0; bit++;
 
 
 
