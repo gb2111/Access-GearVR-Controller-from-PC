@@ -57,7 +57,7 @@ namespace Driver4VR.GearVR
         private async void button3_Click(object sender, EventArgs e)
         {
             await controllers.Enumerate();
-            controllers.Start();
+            await controllers.Start();
         }
 
 

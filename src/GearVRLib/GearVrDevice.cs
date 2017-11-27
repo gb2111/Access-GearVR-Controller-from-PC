@@ -44,6 +44,7 @@ namespace Driver4VR.GearVR
 		private int val2;
 		private int val3;
 		private string deviceId;
+		private IReadOnlyList<GattCharacteristic> allCharacteristics;
 
 		public static void SuspendDrawing(Control parent)
 		{
@@ -140,7 +141,10 @@ namespace Driver4VR.GearVR
 
 
 
-		internal async void Start()
+		internal async 
+
+
+		Task Start()
 		{
 			bleDevice = await Windows.Devices.Bluetooth.BluetoothLEDevice.FromIdAsync(deviceId);
 
@@ -154,10 +158,18 @@ namespace Driver4VR.GearVR
 						 
 				if (s == "4f63756c-7573-2054-6872-65656d6f7465")
 				{
-						myService = service;
+					myService = service;
 
-					//var CharResult = myService.GetAllCharacteristics();
-					//Console.WriteLine("elo");
+					try
+					{
+						allCharacteristics = myService.GetAllCharacteristics();
+					}
+					catch
+					{
+						allCharacteristics = null;
+						myService = null;
+					}
+
 					break;
 				}
 
@@ -175,64 +187,53 @@ namespace Driver4VR.GearVR
 			Guid notifyGuid = new Guid("{c8c51726-81bc-483b-a052-f7a14ea3d281}");
 			Guid writeGuid = new Guid("{c8c51726-81bc-483b-a052-f7a14ea3d282}");
 
-			bool success = true;
+			bool success = false;
 
-			  var charResult = myService.GetAllCharacteristics();
-			//if (CharResult.Status == GattCommunicationStatus.Success)
+			foreach (Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic c in allCharacteristics)
 			{
-				foreach (Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic c in charResult)
+				if (
+					c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Notify) &&
+					c.Uuid == notifyGuid)
 				{
-					if (
-						c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Notify) &&
-						c.Uuid == notifyGuid)
-					{
-						notifyCharacteristic = c;
-					}
-					else if(
-						c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Write) &&
-						c.Uuid == writeGuid)
-					{
-						writeCharacteristic = c;
-					}
-
-					if (notifyCharacteristic != null && writeCharacteristic != null)
-						break;
-
+					notifyCharacteristic = c;
+				}
+				else if(
+					c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Write) &&
+					c.Uuid == writeGuid)
+				{
+					writeCharacteristic = c;
 				}
 
-				success = notifyCharacteristic != null && writeCharacteristic != null;
+				if (notifyCharacteristic != null && writeCharacteristic != null)
+					break;
 
-				if (success)
+			}
+
+			success = notifyCharacteristic != null && writeCharacteristic != null;
+
+			if (success)
+			{
+				try
 				{
-					try
+					// Write the ClientCharacteristicConfigurationDescriptor in order for server to send notifications.               
+					var result = await notifyCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(
+																Windows.Devices.Bluetooth.GenericAttributeProfile.GattClientCharacteristicConfigurationDescriptorValue.Notify);
+					if (result == Windows.Devices.Bluetooth.GenericAttributeProfile.GattCommunicationStatus.Success)
 					{
-						// Write the ClientCharacteristicConfigurationDescriptor in order for server to send notifications.               
-						var result = await notifyCharacteristic.WriteClientCharacteristicConfigurationDescriptorAsync(
-																  Windows.Devices.Bluetooth.GenericAttributeProfile.GattClientCharacteristicConfigurationDescriptorValue.Notify);
-						if (result == Windows.Devices.Bluetooth.GenericAttributeProfile.GattCommunicationStatus.Success)
-						{
-							// var dialogNotifications = new MessageDialog("Successfully registered for notifications");
-							// await dialogNotifications.ShowAsync();
-							notifyCharacteristic.ValueChanged += SelectedCharacteristic_ValueChanged;
-							success = true;
-						}
-
-						if (success)
-						{
-							success = await InitialKickEvents();
-						}
-
+						notifyCharacteristic.ValueChanged += SelectedCharacteristic_ValueChanged;
+						success = true;
 					}
-					catch (Exception ex)
+
+					if (success)
 					{
-						// This usually happens when not all characteristics are found
-						// or selected characteristic has no Notify.
-						//var dialogNotifications = new MessageDialog(ex.Message);
-						//await dialogNotifications.ShowAsync();
-						//await Task.Delay(100);
-						//Get_Characteriisics(myService); //try again
-						//!!! Add a max try counter to prevent infinite loop!!!!!!!
+						success = await InitialKickEvents();
 					}
+
+				}
+				catch (Exception ex)
+				{
+					// This usually happens when not all characteristics are found
+					// or selected characteristic has no Notify.
 				}
 			}
 
@@ -259,17 +260,17 @@ namespace Driver4VR.GearVR
 			val1 = val2 = val3 = 0;
 
 			int bit = 0;
-			//val1 += (eventData[48] & (1 << 7)) != 0 ? (1 << 0) : 0;
-			//val1 += (eventData[49] & (1 << 0)) != 0 ? (1 << 1) : 0;
-			//val1 += (eventData[49] & (1 << 1)) != 0 ? (1 << 2) : 0;
-			//val1 += (eventData[49] & (1 << 3)) != 0 ? (1 << bit++) : 0;
+			val1 += (eventData[48] & (1 << 7)) != 0 ? (1 << 0) : 0;
+			val1 += (eventData[49] & (1 << 0)) != 0 ? (1 << 1) : 0;
+			val1 += (eventData[49] & (1 << 1)) != 0 ? (1 << 2) : 0;
+			val1 += (eventData[49] & (1 << 3)) != 0 ? (1 << bit++) : 0;
 			val1 += (eventData[49] & (1 << 3)) != 0 ? (1 << bit++) : 0;
 
 			bit = 0;
-			//val2 += (eventData[51] & (1 << 0)) != 0 ? (1 << 0) : 0;
-			//val2 += (eventData[51] & (1 << 1)) != 0 ? (1 << 1) : 0;
-			//val2 += (eventData[51] & (1 << 2)) != 0 ? (1 << 2) : 0;
-			//val2 += (eventData[51] & (1 << 3)) != 0 ? (1 << 3) : 0;
+			val2 += (eventData[51] & (1 << 0)) != 0 ? (1 << 0) : 0;
+			val2 += (eventData[51] & (1 << 1)) != 0 ? (1 << 1) : 0;
+			val2 += (eventData[51] & (1 << 2)) != 0 ? (1 << 2) : 0;
+			val2 += (eventData[51] & (1 << 3)) != 0 ? (1 << 3) : 0;
 			val2 += (eventData[51] & (1 << 4)) != 0 ? (1 << bit++) : 0;
 
 			bit = 0;

@@ -14,11 +14,11 @@ namespace Driver4VR.GearVR
 
 
 
-        internal bool Start()
+        internal async Task<bool> Start()
         {
             foreach (var dev in gearVrDevices)
             {
-                dev.Start();
+                await dev.Start();
             }
             return true;
         }
