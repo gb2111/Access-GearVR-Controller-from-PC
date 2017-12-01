@@ -27,10 +27,11 @@ namespace Driver4VR.GearVR
 
 
 		DevcieCollection controllers = new DevcieCollection();
+		private int bitStart;
+		private int bitEnd;
+		private int bitValue;
 
-
-
-        private void timer1_Tick(object sender, EventArgs e)
+		private void timer1_Tick(object sender, EventArgs e)
         {
 
 
@@ -39,6 +40,8 @@ namespace Driver4VR.GearVR
 
 				controllers.gearVrDevices[0].Draw(richTextBox1);
 				label1.Text = controllers.gearVrDevices[0].ToString();
+
+				textBox3.Text = controllers.gearVrDevices[0].BitValue.ToString();
 			}
 			else
 			{
@@ -67,7 +70,29 @@ namespace Driver4VR.GearVR
             await controllers.Start();
         }
 
+		private void textBits_TextChanged(object sender, EventArgs e)
+		{
+			if (controllers.gearVrDevices.Count > 0)
+			{
 
+
+				try
+				{
+					controllers.gearVrDevices[0].bitStart = int.Parse(textBitStart.Text);
+					controllers.gearVrDevices[0].bitEnd = int.Parse(textBitEnd.Text);
+
+
+				}
+				catch
+				{
+				}
+			}
+		}
+
+		private void textBits_TextChanged(object sender, KeyEventArgs e)
+		{
+
+		}
 	}
 
 

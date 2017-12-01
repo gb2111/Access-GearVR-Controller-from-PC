@@ -45,6 +45,27 @@ namespace Driver4VR.GearVR
 		private int val3;
 		private string deviceId;
 		private IReadOnlyList<GattCharacteristic> allCharacteristics;
+		internal int bitStart;
+		internal int bitEnd;
+
+		private  int GetBitValue(int start, int end)
+		{
+			int val = 0;
+
+			for (int i = start; i <= end; i++)
+			{
+				val += eventBits[i] * (1 << (i - start));
+			}
+
+			return val;
+		}
+
+		public int BitValue {
+			get
+			{
+				return GetBitValue(bitStart, bitEnd);
+			}
+		}
 
 		public static void SuspendDrawing(Control parent)
 		{
@@ -128,7 +149,7 @@ namespace Driver4VR.GearVR
 			int curLen, nextLen;
 
 			curLen = richText.TextLength;
-			richText.Text += "00    ";
+			richText.Text += "00-0000    ";
 			nextLen = richText.TextLength;
 			richText.Select(curLen, nextLen);
 			richText.SelectionColor = System.Drawing.Color.Black;
@@ -143,7 +164,13 @@ namespace Driver4VR.GearVR
 					{
 						byteNo++;
 						curLen = richText.TextLength;
-						richText.AppendText( Environment.NewLine + (byteNo).ToString().PadLeft(2, '0') + ":   ");
+						richText.AppendText(
+							Environment.NewLine +
+							(byteNo).ToString().PadLeft(2, '0') +
+							"-"+
+							(byteNo*8).ToString().PadLeft(4, '0') +
+							":   ");
+						
 						nextLen = richText.TextLength;
 						richText.Select(curLen, nextLen);
 						richText.SelectionColor = System.Drawing.Color.Black;
@@ -152,7 +179,13 @@ namespace Driver4VR.GearVR
 					{
 						byteNo++;
 						curLen = richText.TextLength;
-						richText.AppendText("          " + (byteNo).ToString().PadLeft(2, '0') + ":   ");
+						richText.AppendText(
+							"          " +
+							(byteNo).ToString().PadLeft(2, '0') +
+							"-" +
+							(byteNo * 8).ToString().PadLeft(4, '0') +
+							":   ");
+						richText.AppendText(":   ");
 						nextLen = richText.TextLength;
 						richText.Select(curLen, nextLen);
 						richText.SelectionColor = System.Drawing.Color.Black;
@@ -166,8 +199,14 @@ namespace Driver4VR.GearVR
 
 					int col = 200 - ((int)(200 * Math.Abs(eventAnalysis[i]) / eventAnalysisThr));
 
-					richText.SelectionColor = System.Drawing.Color.FromArgb(col, col, col);
-						
+					if (bitStart <= i && i <= bitEnd)
+					{
+						richText.SelectionColor = System.Drawing.Color.FromArgb(col, 255, 255);
+					}
+					else
+					{
+						richText.SelectionColor = System.Drawing.Color.FromArgb(col, col, col);
+					}
 
 
 					richText.AppendText(" ");
@@ -289,29 +328,13 @@ namespace Driver4VR.GearVR
 
 			Windows.Storage.Streams.DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(eventData);
 
-			val1 = val2 = val3 = 0;
 
-			int bit = 0;
-			val1 += (eventData[49] & (1 << 0)) != 0 ? (1 << bit) : 0; bit++;
-			val1 += (eventData[49] & (1 << 1)) != 0 ? (1 << bit) : 0; bit++;
-			val1 += (eventData[49] & (1 << 2)) != 0 ? (1 << bit) : 0; bit++;
-			val1 += (eventData[49] & (1 << 3)) != 0 ? (1 << bit) : 0; bit++;
+			val1 = GetBitValue(388, 396);
+			val2 = GetBitValue(404, 412);
+			val3 = GetBitValue(418, 426);
 
-			bit = 0;
-			val2 += (eventData[51] & (1 << 1)) != 0 ? (1 << bit) : 0; bit++;
-			val2 += (eventData[51] & (1 << 2)) != 0 ? (1 << bit) : 0; bit++;
-			val2 += (eventData[51] & (1 << 3)) != 0 ? (1 << bit) : 0; bit++;
-			val2 += (eventData[51] & (1 << 4)) != 0 ? (1 << bit) : 0; bit++;
-
-			bit = 0;
-			val3 += (eventData[52] & (1 << 6)) != 0 ? (1 << bit) : 0; bit++;
-			val3 += (eventData[52] & (1 << 7)) != 0 ? (1 << bit) : 0; bit++;
-			val3 += (eventData[53] & (1 << 0)) != 0 ? (1 << bit) : 0; bit++;
-			val3 += (eventData[53] & (1 << 1)) != 0 ? (1 << bit) : 0; bit++;
-			//val3 += (eventData[53] & (1 << 2)) != 0 ? (1 << bit) : 0; bit++;
-
-
-
+			if (val1 == 0)
+				Console.WriteLine("elo!!!");
 
 
 			axisX = axisY = 0;
@@ -334,9 +357,9 @@ namespace Driver4VR.GearVR
 			axisX += (eventData[56] & (1 << 2)) != 0 ? (1 << 1) : 0;
 			axisX += (eventData[56] & (1 << 1)) != 0 ? (1 << 0) : 0;
 
-		
 
-		
+
+
 			BitArray bits = new BitArray(eventData);
 
 			for (int i = 0; i < bits.Count; i++)
