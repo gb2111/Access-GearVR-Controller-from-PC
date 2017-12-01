@@ -39,12 +39,19 @@ namespace Driver4VR.GearVR
 
 				controllers.gearVrDevices[0].Draw(richTextBox1);
 				label1.Text = controllers.gearVrDevices[0].ToString();
-
+			}
+			else
+			{
+				label2.Text = "device not found";
 			}
 
-            if (controllers.gearVrDevices.Count > 1)
-            {
+			if (controllers.gearVrDevices.Count > 1)
+			{
 				label2.Text = controllers.gearVrDevices[1].ToString();
+			}
+			else
+			{
+				label2.Text = "second device not found";
 			}
 
 

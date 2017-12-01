@@ -53,8 +53,11 @@ namespace Driver4VR.GearVR
 					if (device != null && device.Kind == Windows.Devices.Enumeration.DeviceInformationKind.DeviceInterface)
 					{
 						var d = new GearVrDevice(device);
-						this.gearVrDevices.Add(d);
-						gearVrDevices.Add(d);
+						bool init = await d.Init();
+						if (init)
+						{
+							this.gearVrDevices.Add(d);
+						}
 					}
 				}
 			}

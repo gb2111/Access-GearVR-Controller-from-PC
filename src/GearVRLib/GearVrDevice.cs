@@ -20,7 +20,7 @@ namespace Driver4VR.GearVR
 		private Windows.Devices.Bluetooth.GenericAttributeProfile.GattDeviceService myService;
 		private Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic notifyCharacteristic;
 		private Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic writeCharacteristic;
-		private byte[] eventData = new byte[0];
+		private byte[] eventData = new byte[60];
 		private int[] eventAnalysis = new int[60 * 8];
 		private int[] eventBits = new int[60 * 8];
 		int eventAnalysisThr = 80;
@@ -55,6 +55,70 @@ namespace Driver4VR.GearVR
 		{
 			SendMessage(parent.Handle, WM_SETREDRAW, true, 0);
 			parent.Refresh();
+		}
+
+		internal async Task<bool> Init()
+		{
+			bool success = false;
+			bleDevice = await Windows.Devices.Bluetooth.BluetoothLEDevice.FromIdAsync(deviceId);
+
+			services = bleDevice.GattServices;
+
+			int ccc = services.Count;
+			for (int i = 0; i < ccc; i++)
+			{
+				Windows.Devices.Bluetooth.GenericAttributeProfile.GattDeviceService service = services[i];
+				string s = service.Uuid.ToString();
+
+				if (s == "4f63756c-7573-2054-6872-65656d6f7465")
+				{
+					myService = service;
+
+					//var CharResult = myService.GetAllCharacteristics();
+					//Console.WriteLine("elo");
+					break;
+				}
+
+			}
+			if (myService != null)
+			{
+				try
+				{
+
+					allCharacteristics = myService.GetAllCharacteristics();
+					Guid notifyGuid = new Guid("{c8c51726-81bc-483b-a052-f7a14ea3d281}");
+					Guid writeGuid = new Guid("{c8c51726-81bc-483b-a052-f7a14ea3d282}");
+
+
+					foreach (Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic c in allCharacteristics)
+					{
+						if (
+							c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Notify) &&
+							c.Uuid == notifyGuid)
+						{
+							notifyCharacteristic = c;
+						}
+						else if (
+							c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Write) &&
+							c.Uuid == writeGuid)
+						{
+							writeCharacteristic = c;
+						}
+
+						if (notifyCharacteristic != null && writeCharacteristic != null)
+							break;
+
+					}
+
+					success = notifyCharacteristic != null && writeCharacteristic != null;
+
+				}
+				catch
+				{
+				}
+			}
+
+			return success;
 		}
 
 		internal  void Draw(RichTextBox richText)
@@ -141,48 +205,16 @@ namespace Driver4VR.GearVR
 
 
 
-		internal async 
 
-
-		Task Start()
+		internal async Task Start()
 		{
-			bleDevice = await Windows.Devices.Bluetooth.BluetoothLEDevice.FromIdAsync(deviceId);
-
-			services = bleDevice.GattServices;
-
-			int ccc = services.Count;
-			for (int i = 0; i < ccc; i++)
-			{
-				Windows.Devices.Bluetooth.GenericAttributeProfile.GattDeviceService service = services[i];
-				string s = service.Uuid.ToString();
-						 
-				if (s == "4f63756c-7573-2054-6872-65656d6f7465")
-				{
-					myService = service;
-
-					try
-					{
-						allCharacteristics = myService.GetAllCharacteristics();
-					}
-					catch
-					{
-						allCharacteristics = null;
-						myService = null;
-					}
-
-					break;
-				}
-
-			}
-			if (myService != null)
-			{
-				Get_Characteriisics();
-			}
+			
+			await InitializeEvents();
 		}
 
 
 
-		private async void Get_Characteriisics()
+		private async Task InitializeEvents()
 		{
 			Guid notifyGuid = new Guid("{c8c51726-81bc-483b-a052-f7a14ea3d281}");
 			Guid writeGuid = new Guid("{c8c51726-81bc-483b-a052-f7a14ea3d282}");
@@ -272,10 +304,11 @@ namespace Driver4VR.GearVR
 			val2 += (eventData[51] & (1 << 4)) != 0 ? (1 << bit) : 0; bit++;
 
 			bit = 0;
+			val3 += (eventData[52] & (1 << 6)) != 0 ? (1 << bit) : 0; bit++;
 			val3 += (eventData[52] & (1 << 7)) != 0 ? (1 << bit) : 0; bit++;
 			val3 += (eventData[53] & (1 << 0)) != 0 ? (1 << bit) : 0; bit++;
 			val3 += (eventData[53] & (1 << 1)) != 0 ? (1 << bit) : 0; bit++;
-			val3 += (eventData[53] & (1 << 2)) != 0 ? (1 << bit) : 0; bit++;
+			//val3 += (eventData[53] & (1 << 2)) != 0 ? (1 << bit) : 0; bit++;
 
 
 
