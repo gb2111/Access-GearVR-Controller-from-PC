@@ -16,7 +16,6 @@ namespace Driver4VR.GearVR
 		private DeviceInformation device;
 	
 		private Windows.Devices.Bluetooth.BluetoothLEDevice bleDevice;
-		private System.Collections.Generic.IReadOnlyList<Windows.Devices.Bluetooth.GenericAttributeProfile.GattDeviceService> services;
 		private Windows.Devices.Bluetooth.GenericAttributeProfile.GattDeviceService myService;
 		private Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic notifyCharacteristic;
 		private Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic writeCharacteristic;
@@ -44,7 +43,6 @@ namespace Driver4VR.GearVR
 		private int val2;
 		private int val3;
 		private string deviceId;
-		private IReadOnlyList<GattCharacteristic> allCharacteristics;
 		internal int bitStart;
 		internal int bitEnd;
 
@@ -83,51 +81,59 @@ namespace Driver4VR.GearVR
 			bool success = false;
 			bleDevice = await Windows.Devices.Bluetooth.BluetoothLEDevice.FromIdAsync(deviceId);
 
-			services = bleDevice.GattServices;
+			GattDeviceServicesResult servicesResult = await bleDevice.GetGattServicesAsync();
 
-			int ccc = services.Count;
-			for (int i = 0; i < ccc; i++)
-			{
-				Windows.Devices.Bluetooth.GenericAttributeProfile.GattDeviceService service = services[i];
-				string s = service.Uuid.ToString();
+			if (servicesResult.Status == GattCommunicationStatus.Success) {
+				IReadOnlyList<GattDeviceService>  services = servicesResult.Services;
 
-				if (s == "4f63756c-7573-2054-6872-65656d6f7465")
+				int servicesCount = services.Count;
+				for (int i = 0; i < servicesCount; i++)
 				{
-					myService = service;
+					Windows.Devices.Bluetooth.GenericAttributeProfile.GattDeviceService service = services[i];
+					string s = service.Uuid.ToString();
 
-					//var CharResult = myService.GetAllCharacteristics();
-					//Console.WriteLine("elo");
-					break;
+					if (s == "4f63756c-7573-2054-6872-65656d6f7465")
+					{
+						myService = service;
+
+						//var CharResult = myService.GetAllCharacteristics();
+						//Console.WriteLine("elo");
+						break;
+					}
+
 				}
-
 			}
 			if (myService != null)
 			{
 				try
 				{
+					GattCharacteristicsResult charResult = await myService.GetCharacteristicsAsync();
 
-					allCharacteristics = myService.GetAllCharacteristics();
+					if(charResult.Status == GattCommunicationStatus.Success) {
+
+						IReadOnlyList<GattCharacteristic> allCharacteristics = charResult.Characteristics;
 					Guid notifyGuid = new Guid("{c8c51726-81bc-483b-a052-f7a14ea3d281}");
 					Guid writeGuid = new Guid("{c8c51726-81bc-483b-a052-f7a14ea3d282}");
 
 
-					foreach (Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic c in allCharacteristics)
-					{
-						if (
-							c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Notify) &&
-							c.Uuid == notifyGuid)
+						foreach (Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic c in allCharacteristics)
 						{
-							notifyCharacteristic = c;
-						}
-						else if (
-							c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Write) &&
-							c.Uuid == writeGuid)
-						{
-							writeCharacteristic = c;
-						}
+							if (
+								c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Notify) &&
+								c.Uuid == notifyGuid)
+							{
+								notifyCharacteristic = c;
+							}
+							else if (
+								c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Write) &&
+								c.Uuid == writeGuid)
+							{
+								writeCharacteristic = c;
+							}
 
-						if (notifyCharacteristic != null && writeCharacteristic != null)
-							break;
+							if (notifyCharacteristic != null && writeCharacteristic != null)
+								break;
+						}
 
 					}
 
@@ -260,26 +266,7 @@ namespace Driver4VR.GearVR
 
 			bool success = false;
 
-			foreach (Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic c in allCharacteristics)
-			{
-				if (
-					c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Notify) &&
-					c.Uuid == notifyGuid)
-				{
-					notifyCharacteristic = c;
-				}
-				else if(
-					c.CharacteristicProperties.HasFlag(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristicProperties.Write) &&
-					c.Uuid == writeGuid)
-				{
-					writeCharacteristic = c;
-				}
-
-				if (notifyCharacteristic != null && writeCharacteristic != null)
-					break;
-
-			}
-
+	
 			success = notifyCharacteristic != null && writeCharacteristic != null;
 
 			if (success)
@@ -328,13 +315,12 @@ namespace Driver4VR.GearVR
 
 			Windows.Storage.Streams.DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(eventData);
 
+			Console.WriteLine("data event.");
+
 
 			val1 = GetBitValue(388, 396);
 			val2 = GetBitValue(404, 412);
 			val3 = GetBitValue(418, 426);
-
-			if (val1 == 0)
-				Console.WriteLine("elo!!!");
 
 
 			axisX = axisY = 0;

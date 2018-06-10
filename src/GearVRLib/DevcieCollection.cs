@@ -36,7 +36,7 @@ namespace Driver4VR.GearVR
 
 		async private Task<bool> EnumerateGearVR()
 		{
-			String findStuff = "System.DeviceInterface.Bluetooth.ServiceGuid:= \"{00001800-0000-1000-8000-00805f9b34fb}\"";
+			String findStuff = "";// "System.DeviceInterface.Bluetooth.ServiceGuid:= \"{00001800-0000-1000-8000-00805f9b34fb}\"";
 
 			var gearVrFound = await Windows.Devices.Enumeration.DeviceInformation.FindAllAsync(findStuff);
 
@@ -50,7 +50,7 @@ namespace Driver4VR.GearVR
 				System.Diagnostics.Debug.WriteLine("FindAllAsync GearVR devices.Count : " + gearVrFound.Count);
 				foreach (Windows.Devices.Enumeration.DeviceInformation device in gearVrFound)
 				{
-					if (device != null && device.Kind == Windows.Devices.Enumeration.DeviceInformationKind.DeviceInterface)
+					if (device != null && device.Name.ToUpper().Contains("GEAR") && device.Kind == Windows.Devices.Enumeration.DeviceInformationKind.DeviceInterface)
 					{
 						var d = new GearVrDevice(device);
 						bool init = await d.Init();
