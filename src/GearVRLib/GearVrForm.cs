@@ -33,9 +33,23 @@ namespace Driver4VR.GearVR
 
 		private void timer1_Tick(object sender, EventArgs e)
         {
+			string txt = "Found: " + controllers.gearVrDevices.Count;
 
+			if (labelFoundNo.Text != txt)
+				labelFoundNo.Text = txt;
 
-            if(controllers.gearVrDevices.Count > 0)
+			if (controllers.gearVrDevices.Count > 0)
+			{
+				txt = "Connected: " + (controllers.gearVrDevices[0].IsConnected ? "yes" : "no");
+				if (labelConnected.Text != txt)
+					labelConnected.Text = txt;
+
+				txt = "Listening: " + (controllers.gearVrDevices[0].startSuccess ? "yes" : "no");
+				if (labelResult.Text != txt)
+					labelResult.Text = txt;
+			}
+
+			if (controllers.gearVrDevices.Count > 0)
             {
 
 				controllers.gearVrDevices[0].Draw(richTextBox1);
@@ -66,8 +80,8 @@ namespace Driver4VR.GearVR
 
         private async void button3_Click(object sender, EventArgs e)
         {
-            await controllers.Enumerate();
-            await controllers.Start();
+            await controllers.StartScan();
+//            await controllers.Start();
         }
 
 		private void textBits_TextChanged(object sender, EventArgs e)
@@ -92,6 +106,28 @@ namespace Driver4VR.GearVR
 		private void textBits_TextChanged(object sender, KeyEventArgs e)
 		{
 
+		}
+
+		private async void buttonStart_Click(object sender, EventArgs e)
+		{
+			if (controllers.gearVrDevices.Count == 0)
+			{
+				MessageBox.Show("No devices found");
+				return;
+			}
+
+			await controllers.gearVrDevices[0].Start();
+		}
+
+		private async void buttonConnect_Click_1(object sender, EventArgs e)
+		{
+			if (controllers.gearVrDevices.Count == 0)
+			{
+				MessageBox.Show("No devices found");
+				return;
+			}
+
+			await controllers.gearVrDevices[0].Connect();
 		}
 	}
 

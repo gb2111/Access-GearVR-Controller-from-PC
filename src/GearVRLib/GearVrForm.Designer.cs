@@ -43,6 +43,11 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
 			this.label8 = new System.Windows.Forms.Label();
+			this.labelFoundNo = new System.Windows.Forms.Label();
+			this.buttonStart = new System.Windows.Forms.Button();
+			this.buttonConnect = new System.Windows.Forms.Button();
+			this.labelConnected = new System.Windows.Forms.Label();
+			this.labelResult = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// timer1
@@ -72,7 +77,7 @@
 			// 
 			// button3
 			// 
-			this.button3.Location = new System.Drawing.Point(635, 59);
+			this.button3.Location = new System.Drawing.Point(583, 21);
 			this.button3.Name = "button3";
 			this.button3.Size = new System.Drawing.Size(134, 23);
 			this.button3.TabIndex = 38;
@@ -173,11 +178,63 @@
 			this.label8.TabIndex = 49;
 			this.label8.Text = "value";
 			// 
+			// labelFoundNo
+			// 
+			this.labelFoundNo.AutoSize = true;
+			this.labelFoundNo.Location = new System.Drawing.Point(737, 26);
+			this.labelFoundNo.Name = "labelFoundNo";
+			this.labelFoundNo.Size = new System.Drawing.Size(49, 13);
+			this.labelFoundNo.TabIndex = 50;
+			this.labelFoundNo.Text = "Found: 0";
+			// 
+			// buttonStart
+			// 
+			this.buttonStart.Location = new System.Drawing.Point(583, 80);
+			this.buttonStart.Name = "buttonStart";
+			this.buttonStart.Size = new System.Drawing.Size(134, 23);
+			this.buttonStart.TabIndex = 51;
+			this.buttonStart.Text = "Start";
+			this.buttonStart.UseVisualStyleBackColor = true;
+			this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
+			// 
+			// buttonConnect
+			// 
+			this.buttonConnect.Location = new System.Drawing.Point(583, 50);
+			this.buttonConnect.Name = "buttonConnect";
+			this.buttonConnect.Size = new System.Drawing.Size(134, 23);
+			this.buttonConnect.TabIndex = 52;
+			this.buttonConnect.Text = "Connect";
+			this.buttonConnect.UseVisualStyleBackColor = true;
+			this.buttonConnect.Click += new System.EventHandler(this.buttonConnect_Click_1);
+			// 
+			// labelConnected
+			// 
+			this.labelConnected.AutoSize = true;
+			this.labelConnected.Location = new System.Drawing.Point(737, 55);
+			this.labelConnected.Name = "labelConnected";
+			this.labelConnected.Size = new System.Drawing.Size(77, 13);
+			this.labelConnected.TabIndex = 53;
+			this.labelConnected.Text = "Connected: no";
+			// 
+			// labelResult
+			// 
+			this.labelResult.AutoSize = true;
+			this.labelResult.Location = new System.Drawing.Point(737, 85);
+			this.labelResult.Name = "labelResult";
+			this.labelResult.Size = new System.Drawing.Size(72, 13);
+			this.labelResult.TabIndex = 54;
+			this.labelResult.Text = "Listening: n/a";
+			// 
 			// GearVrForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(905, 714);
+			this.Controls.Add(this.labelResult);
+			this.Controls.Add(this.labelConnected);
+			this.Controls.Add(this.buttonConnect);
+			this.Controls.Add(this.buttonStart);
+			this.Controls.Add(this.labelFoundNo);
 			this.Controls.Add(this.label8);
 			this.Controls.Add(this.label7);
 			this.Controls.Add(this.label6);
@@ -213,5 +270,10 @@
 		private System.Windows.Forms.Label label6;
 		private System.Windows.Forms.Label label7;
 		private System.Windows.Forms.Label label8;
+		private System.Windows.Forms.Label labelFoundNo;
+		private System.Windows.Forms.Button buttonStart;
+		private System.Windows.Forms.Button buttonConnect;
+		private System.Windows.Forms.Label labelConnected;
+		private System.Windows.Forms.Label labelResult;
 	}
 }

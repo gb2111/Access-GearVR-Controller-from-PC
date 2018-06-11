@@ -45,6 +45,7 @@ namespace Driver4VR.GearVR
 		private string deviceId;
 		internal int bitStart;
 		internal int bitEnd;
+		internal bool startSuccess;
 
 		private  int GetBitValue(int start, int end)
 		{
@@ -65,6 +66,14 @@ namespace Driver4VR.GearVR
 			}
 		}
 
+		public string Id
+		{
+			get
+			{
+				return device.Id;
+			}
+		}
+
 		public static void SuspendDrawing(Control parent)
 		{
 			SendMessage(parent.Handle, WM_SETREDRAW, false, 0);
@@ -76,7 +85,15 @@ namespace Driver4VR.GearVR
 			parent.Refresh();
 		}
 
-		internal async Task<bool> Init()
+		internal bool IsConnected
+		{
+			get
+			{
+				return myService != null && notifyCharacteristic != null && writeCharacteristic != null;
+			}
+		}
+
+		internal async Task<bool> Connect()
 		{
 			bool success = false;
 			bleDevice = await Windows.Devices.Bluetooth.BluetoothLEDevice.FromIdAsync(deviceId);
@@ -146,6 +163,15 @@ namespace Driver4VR.GearVR
 			}
 
 			return success;
+		}
+
+		internal void Update(DeviceInformationUpdate deviceInfoUpdate)
+		{
+			
+			Console.WriteLine(String.Format("Updated {0} - {1}", deviceInfoUpdate.Id, deviceInfoUpdate.Kind));
+
+
+			this.device.Update(deviceInfoUpdate);
 		}
 
 		internal  void Draw(RichTextBox richText)
@@ -253,7 +279,7 @@ namespace Driver4VR.GearVR
 
 		internal async Task Start()
 		{
-			
+
 			await InitializeEvents();
 		}
 
@@ -264,10 +290,8 @@ namespace Driver4VR.GearVR
 			Guid notifyGuid = new Guid("{c8c51726-81bc-483b-a052-f7a14ea3d281}");
 			Guid writeGuid = new Guid("{c8c51726-81bc-483b-a052-f7a14ea3d282}");
 
-			bool success = false;
-
-	
-			success = notifyCharacteristic != null && writeCharacteristic != null;
+			startSuccess = false;
+			bool success = notifyCharacteristic != null && writeCharacteristic != null;
 
 			if (success)
 			{
@@ -295,6 +319,8 @@ namespace Driver4VR.GearVR
 				}
 			}
 
+			startSuccess = success;
+
 		}
 
 		private async Task<bool> InitialKickEvents()
@@ -304,8 +330,9 @@ namespace Driver4VR.GearVR
 			writer.WriteInt16(val);
 			GattCommunicationStatus writeResult = await writeCharacteristic.WriteValueAsync(writer.DetachBuffer());
 
-			bool success = writeResult == GattCommunicationStatus.Success;
-			return success;
+
+			startSuccess = writeResult == GattCommunicationStatus.Success;
+			return startSuccess;
 		}
 
 		private void SelectedCharacteristic_ValueChanged(Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic sender, Windows.Devices.Bluetooth.GenericAttributeProfile.GattValueChangedEventArgs args)
