@@ -116,7 +116,7 @@ namespace Driver4VR.GearVR
 				return;
 			}
 
-			await controllers.gearVrDevices[0].Start();
+			await controllers.gearVrDevices[0].Initialize();
 		}
 
 		private async void buttonConnect_Click_1(object sender, EventArgs e)
@@ -128,6 +128,17 @@ namespace Driver4VR.GearVR
 			}
 
 			await controllers.gearVrDevices[0].Connect();
+		}
+
+		private void buttonKickEvents_Click(object sender, EventArgs e)
+		{
+			if (controllers.gearVrDevices.Count == 0)
+			{
+				MessageBox.Show("No devices found");
+				return;
+			}
+
+			controllers.gearVrDevices[0].KickEvents();
 		}
 	}
 

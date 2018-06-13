@@ -19,7 +19,7 @@ namespace Driver4VR.GearVR
         {
             foreach (var dev in gearVrDevices)
             {
-                await dev.Start();
+                await dev.Initialize();
             }
             return true;
         }

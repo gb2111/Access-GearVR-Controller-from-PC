@@ -165,6 +165,27 @@ namespace Driver4VR.GearVR
 			return success;
 		}
 
+		internal async void KickEvents()
+		{
+			var writer = new Windows.Storage.Streams.DataWriter();
+			short val = 0x0800;
+			writer.WriteInt16(val);
+			GattCommunicationStatus writeResult = await writeCharacteristic.WriteValueAsync(writer.DetachBuffer());
+
+			if (writeResult == GattCommunicationStatus.Success)
+			{
+
+				writer = new Windows.Storage.Streams.DataWriter();
+				val = 0x0100;
+				writer.WriteInt16(val);
+				writeResult = await writeCharacteristic.WriteValueAsync(writer.DetachBuffer());
+			}
+
+
+			bool startSuccess = writeResult == GattCommunicationStatus.Success;
+
+		}
+
 		internal void Update(DeviceInformationUpdate deviceInfoUpdate)
 		{
 			
@@ -277,7 +298,7 @@ namespace Driver4VR.GearVR
 
 
 
-		internal async Task Start()
+		internal async Task Initialize()
 		{
 
 			await InitializeEvents();
@@ -308,12 +329,13 @@ namespace Driver4VR.GearVR
 
 					if (success)
 					{
-						success = await InitialKickEvents();
+					//	success = await InitialKickEvents();
 					}
 
 				}
 				catch (Exception ex)
 				{
+					Console.WriteLine("error: " + ex.Message);
 					// This usually happens when not all characteristics are found
 					// or selected characteristic has no Notify.
 				}
@@ -326,9 +348,18 @@ namespace Driver4VR.GearVR
 		private async Task<bool> InitialKickEvents()
 		{
 			var writer = new Windows.Storage.Streams.DataWriter();
-			short val = 0x0100;
+			short val = 0x0800;
 			writer.WriteInt16(val);
 			GattCommunicationStatus writeResult = await writeCharacteristic.WriteValueAsync(writer.DetachBuffer());
+
+			if (writeResult == GattCommunicationStatus.Success)
+			{
+
+				writer = new Windows.Storage.Streams.DataWriter();
+				val = 0x0100;
+				writer.WriteInt16(val);
+				writeResult = await writeCharacteristic.WriteValueAsync(writer.DetachBuffer());
+			}
 
 
 			startSuccess = writeResult == GattCommunicationStatus.Success;
@@ -342,7 +373,10 @@ namespace Driver4VR.GearVR
 
 			Windows.Storage.Streams.DataReader.FromBuffer(args.CharacteristicValue).ReadBytes(eventData);
 
-			Console.WriteLine("data event.");
+			Console.WriteLine("data event with length: " + eventData.Length);
+
+			if (eventData.Length != 60)
+				return;
 
 
 			val1 = GetBitValue(388, 396);

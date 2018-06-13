@@ -48,6 +48,7 @@
 			this.buttonConnect = new System.Windows.Forms.Button();
 			this.labelConnected = new System.Windows.Forms.Label();
 			this.labelResult = new System.Windows.Forms.Label();
+			this.buttonKickEvents = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// timer1
@@ -77,9 +78,9 @@
 			// 
 			// button3
 			// 
-			this.button3.Location = new System.Drawing.Point(583, 21);
+			this.button3.Location = new System.Drawing.Point(549, 21);
 			this.button3.Name = "button3";
-			this.button3.Size = new System.Drawing.Size(134, 23);
+			this.button3.Size = new System.Drawing.Size(168, 23);
 			this.button3.TabIndex = 38;
 			this.button3.Text = "Find controllers";
 			this.button3.UseVisualStyleBackColor = true;
@@ -189,19 +190,19 @@
 			// 
 			// buttonStart
 			// 
-			this.buttonStart.Location = new System.Drawing.Point(583, 80);
+			this.buttonStart.Location = new System.Drawing.Point(549, 80);
 			this.buttonStart.Name = "buttonStart";
-			this.buttonStart.Size = new System.Drawing.Size(134, 23);
+			this.buttonStart.Size = new System.Drawing.Size(168, 23);
 			this.buttonStart.TabIndex = 51;
-			this.buttonStart.Text = "Start";
+			this.buttonStart.Text = "Initialize and subscribe to events";
 			this.buttonStart.UseVisualStyleBackColor = true;
 			this.buttonStart.Click += new System.EventHandler(this.buttonStart_Click);
 			// 
 			// buttonConnect
 			// 
-			this.buttonConnect.Location = new System.Drawing.Point(583, 50);
+			this.buttonConnect.Location = new System.Drawing.Point(549, 50);
 			this.buttonConnect.Name = "buttonConnect";
-			this.buttonConnect.Size = new System.Drawing.Size(134, 23);
+			this.buttonConnect.Size = new System.Drawing.Size(168, 23);
 			this.buttonConnect.TabIndex = 52;
 			this.buttonConnect.Text = "Connect";
 			this.buttonConnect.UseVisualStyleBackColor = true;
@@ -225,11 +226,22 @@
 			this.labelResult.TabIndex = 54;
 			this.labelResult.Text = "Listening: n/a";
 			// 
+			// button1
+			// 
+			this.buttonKickEvents.Location = new System.Drawing.Point(549, 109);
+			this.buttonKickEvents.Name = "button1";
+			this.buttonKickEvents.Size = new System.Drawing.Size(168, 23);
+			this.buttonKickEvents.TabIndex = 55;
+			this.buttonKickEvents.Text = "Kick events";
+			this.buttonKickEvents.UseVisualStyleBackColor = true;
+			this.buttonKickEvents.Click += new System.EventHandler(this.buttonKickEvents_Click);
+			// 
 			// GearVrForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(905, 714);
+			this.Controls.Add(this.buttonKickEvents);
 			this.Controls.Add(this.labelResult);
 			this.Controls.Add(this.labelConnected);
 			this.Controls.Add(this.buttonConnect);
@@ -275,5 +287,6 @@
 		private System.Windows.Forms.Button buttonConnect;
 		private System.Windows.Forms.Label labelConnected;
 		private System.Windows.Forms.Label labelResult;
+		private System.Windows.Forms.Button buttonKickEvents;
 	}
 }
