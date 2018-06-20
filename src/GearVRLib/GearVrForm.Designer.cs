@@ -49,6 +49,7 @@
 			this.labelConnected = new System.Windows.Forms.Label();
 			this.labelResult = new System.Windows.Forms.Label();
 			this.buttonKickEvents = new System.Windows.Forms.Button();
+			this.labelKicking = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// timer1
@@ -70,7 +71,7 @@
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(632, 491);
+			this.label2.Location = new System.Drawing.Point(632, 547);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(35, 13);
 			this.label2.TabIndex = 15;
@@ -107,7 +108,7 @@
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(632, 478);
+			this.label4.Location = new System.Drawing.Point(632, 534);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(91, 13);
 			this.label4.TabIndex = 42;
@@ -124,7 +125,7 @@
 			// 
 			// textBitStart
 			// 
-			this.textBitStart.Location = new System.Drawing.Point(665, 349);
+			this.textBitStart.Location = new System.Drawing.Point(665, 405);
 			this.textBitStart.Name = "textBitStart";
 			this.textBitStart.Size = new System.Drawing.Size(100, 20);
 			this.textBitStart.TabIndex = 44;
@@ -134,7 +135,7 @@
 			// 
 			// textBitEnd
 			// 
-			this.textBitEnd.Location = new System.Drawing.Point(665, 375);
+			this.textBitEnd.Location = new System.Drawing.Point(665, 431);
 			this.textBitEnd.Name = "textBitEnd";
 			this.textBitEnd.Size = new System.Drawing.Size(100, 20);
 			this.textBitEnd.TabIndex = 45;
@@ -144,7 +145,7 @@
 			// 
 			// textBox3
 			// 
-			this.textBox3.Location = new System.Drawing.Point(665, 401);
+			this.textBox3.Location = new System.Drawing.Point(665, 457);
 			this.textBox3.Name = "textBox3";
 			this.textBox3.Size = new System.Drawing.Size(100, 20);
 			this.textBox3.TabIndex = 46;
@@ -153,7 +154,7 @@
 			// 
 			this.label6.AutoSize = true;
 			this.label6.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-			this.label6.Location = new System.Drawing.Point(580, 352);
+			this.label6.Location = new System.Drawing.Point(580, 408);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(70, 14);
 			this.label6.TabIndex = 47;
@@ -163,7 +164,7 @@
 			// 
 			this.label7.AutoSize = true;
 			this.label7.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-			this.label7.Location = new System.Drawing.Point(594, 378);
+			this.label7.Location = new System.Drawing.Point(594, 434);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(56, 14);
 			this.label7.TabIndex = 48;
@@ -173,7 +174,7 @@
 			// 
 			this.label8.AutoSize = true;
 			this.label8.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-			this.label8.Location = new System.Drawing.Point(608, 404);
+			this.label8.Location = new System.Drawing.Point(608, 460);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(42, 14);
 			this.label8.TabIndex = 49;
@@ -226,21 +227,32 @@
 			this.labelResult.TabIndex = 54;
 			this.labelResult.Text = "Listening: n/a";
 			// 
-			// button1
+			// buttonKickEvents
 			// 
 			this.buttonKickEvents.Location = new System.Drawing.Point(549, 109);
-			this.buttonKickEvents.Name = "button1";
+			this.buttonKickEvents.Name = "buttonKickEvents";
 			this.buttonKickEvents.Size = new System.Drawing.Size(168, 23);
 			this.buttonKickEvents.TabIndex = 55;
 			this.buttonKickEvents.Text = "Kick events";
 			this.buttonKickEvents.UseVisualStyleBackColor = true;
 			this.buttonKickEvents.Click += new System.EventHandler(this.buttonKickEvents_Click);
 			// 
+			// labelKicking
+			// 
+			this.labelKicking.AutoSize = true;
+			this.labelKicking.Location = new System.Drawing.Point(737, 114);
+			this.labelKicking.Name = "labelKicking";
+			this.labelKicking.Size = new System.Drawing.Size(53, 13);
+			this.labelKicking.TabIndex = 56;
+			this.labelKicking.Text = "sending...";
+			this.labelKicking.Visible = false;
+			// 
 			// GearVrForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(905, 714);
+			this.Controls.Add(this.labelKicking);
 			this.Controls.Add(this.buttonKickEvents);
 			this.Controls.Add(this.labelResult);
 			this.Controls.Add(this.labelConnected);
@@ -288,5 +300,6 @@
 		private System.Windows.Forms.Label labelConnected;
 		private System.Windows.Forms.Label labelResult;
 		private System.Windows.Forms.Button buttonKickEvents;
+		private System.Windows.Forms.Label labelKicking;
 	}
 }

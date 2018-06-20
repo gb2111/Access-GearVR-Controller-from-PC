@@ -35,6 +35,10 @@ namespace Driver4VR.GearVR
 		private int axisY = 0;
 		private int axisX = 0;
 
+		private float[] accel = new float[3];
+		private float[] gyro = new float[3];
+		private float[] mag = new float[3];
+
 		[DllImport("user32.dll")]
 		public static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam);
 
@@ -165,8 +169,12 @@ namespace Driver4VR.GearVR
 			return success;
 		}
 
+		internal bool kickingEvents = false;
+
 		internal async void KickEvents()
 		{
+			kickingEvents = true;
+
 			var writer = new Windows.Storage.Streams.DataWriter();
 			short val = 0x0800;
 			writer.WriteInt16(val);
@@ -181,6 +189,7 @@ namespace Driver4VR.GearVR
 				writeResult = await writeCharacteristic.WriteValueAsync(writer.DetachBuffer());
 			}
 
+			kickingEvents = false;
 
 			bool startSuccess = writeResult == GattCommunicationStatus.Success;
 
@@ -286,6 +295,10 @@ namespace Driver4VR.GearVR
 			str += "Val2: " + val2 + Environment.NewLine;
 			str += "Val3: " + val3 + Environment.NewLine;
 
+			str += string.Format("Accel: {0:N4}, {1:N4}, {2:N4}", accel[0], accel[1], accel[2]) + Environment.NewLine;
+			str += string.Format("Gyro: {0:N4}, {1:N4}, {2:N4}", gyro[0], gyro[1], gyro[2]) + Environment.NewLine;
+			str += string.Format("Mag: {0:N4}, {1:N4}, {2:N4}", mag[0], mag[1], mag[2]) + Environment.NewLine;
+
 			return str;
 		}
 
@@ -384,28 +397,31 @@ namespace Driver4VR.GearVR
 			val3 = GetBitValue(418, 426);
 
 
-			axisX = axisY = 0;
+			// Max observed value = 315
+			// (corresponds to touchpad sensitive dimension in mm)
+			axisX = (
+				((eventData[54] & 0xF) << 6) +
+				((eventData[55] & 0xFC) >> 2)
+			) & 0x3FF;
 
-			axisY += (eventData[55] & (1 << 3)) != 0 ? (1 << 0) : 0;
-			axisY += (eventData[55] & (1 << 4)) != 0 ? (1 << 1) : 0;
-			axisY += (eventData[55] & (1 << 5)) != 0 ? (1 << 2) : 0;
-			axisY += (eventData[55] & (1 << 6)) != 0 ? (1 << 3) : 0;
-			axisY += (eventData[55] & (1 << 7)) != 0 ? (1 << 4) : 0;
-			axisY += (eventData[54] & (1 << 0)) != 0 ? (1 << 5) : 0;
-			axisY += (eventData[54] & (1 << 1)) != 0 ? (1 << 6) : 0;
-			axisY += (eventData[54] & (1 << 2)) != 0 ? (1 << 7) : 0;
-
-			axisX += (eventData[55] & (1 << 0)) != 0 ? (1 << 7) : 0;
-			axisX += (eventData[56] & (1 << 7)) != 0 ? (1 << 6) : 0;
-			axisX += (eventData[56] & (1 << 6)) != 0 ? (1 << 5) : 0;
-			axisX += (eventData[56] & (1 << 5)) != 0 ? (1 << 4) : 0;
-			axisX += (eventData[56] & (1 << 4)) != 0 ? (1 << 3) : 0;
-			axisX += (eventData[56] & (1 << 3)) != 0 ? (1 << 2) : 0;
-			axisX += (eventData[56] & (1 << 2)) != 0 ? (1 << 1) : 0;
-			axisX += (eventData[56] & (1 << 1)) != 0 ? (1 << 0) : 0;
+			// Max observed value = 315
+			axisY = (
+				((eventData[55] & 0x3) << 8) +
+				((eventData[56] & 0xFF) >> 0)
+			) & 0x3FF;
 
 
+			accel[0] = (eventData[4] + eventData[5] << 8) * 10000.0f * 9.80665f / 2048.0f;
+			accel[1] = (eventData[6] + eventData[7] << 8) * 10000.0f * 9.80665f / 2048.0f;
+			accel[2] = (eventData[8] + eventData[9] << 8) * 10000.0f * 9.80665f / 2048.0f;
 
+			gyro[0] = (eventData[10] + eventData[11] << 8) * 10000.0f * 0.017453292f / 14.285f;
+			gyro[1] = (eventData[12] + eventData[13] << 8) * 10000.0f * 0.017453292f / 14.285f;
+			gyro[2] = (eventData[14] + eventData[15] << 8) * 10000.0f * 0.017453292f / 14.285f;
+
+			mag[0] = (eventData[32] + eventData[33] << 8) * 0.06f;
+			mag[0] = (eventData[34] + eventData[35] << 8) * 0.06f;
+			mag[0] = (eventData[36] + eventData[37] << 8) * 0.06f;
 
 			BitArray bits = new BitArray(eventData);
 

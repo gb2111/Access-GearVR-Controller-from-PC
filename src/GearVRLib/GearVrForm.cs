@@ -35,6 +35,7 @@ namespace Driver4VR.GearVR
         {
 			string txt = "Found: " + controllers.gearVrDevices.Count;
 
+
 			if (labelFoundNo.Text != txt)
 				labelFoundNo.Text = txt;
 
@@ -47,6 +48,12 @@ namespace Driver4VR.GearVR
 				txt = "Listening: " + (controllers.gearVrDevices[0].startSuccess ? "yes" : "no");
 				if (labelResult.Text != txt)
 					labelResult.Text = txt;
+
+				if (labelKicking.Visible != controllers.gearVrDevices[0].kickingEvents)
+				{
+					labelKicking.Visible = controllers.gearVrDevices[0].kickingEvents;
+				}
+
 			}
 
 			if (controllers.gearVrDevices.Count > 0)
